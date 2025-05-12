@@ -4,10 +4,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/test');
 
 
 const UserSchema = new mongoose.Schema({
+  Image: {
+    type: String
+  },
   username: {
     type: String,
     required: true,
-    unique: true,
   },
   password: {
     type: String,

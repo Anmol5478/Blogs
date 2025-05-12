@@ -1,32 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Blogs</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background-color: #000;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Blogs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: white;
+    }
+  </style>
 </head>
-<body>
-    <div class="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl w-full bg-gray-900/50 p-8 rounded-xl border border-gray-800 shadow-2xl">
-            <h1 class="text-3xl font-bold mb-6 text-center">All Blogs</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <% blogs.forEach(blog => { %>
-                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 shadow-lg">
-                        <h2 class="text-2xl font-semibold mb-2 text-purple-400"><%= blog.title %></h2>
-                        <p class="text-gray-400 text-sm mb-4">Published on: <%= new Date(blog.createdAt).toLocaleDateString() %></p>
-                        <p class="text-gray-300 mb-4"><%= blog.content %>...</p>
-                        <a href="/blogs/<%= blogs.id %>" class="text-purple-500 hover:underline">Read More</a>
-                    </div>
-                <% }) %>
-            </div>
+<body class="min-h-screen flex flex-col items-center px-4 py-10">
+
+  <div class="w-full max-w-4xl">
+    <h1 class="text-4xl font-bold text-center text-white mb-10">All Blogs</h1>
+
+    <% blogs.forEach(blog => { %>
+    <div class="flex flex-col md:flex-row bg-gray-800 rounded-xl mb-8 overflow-hidden shadow-md border border-gray-700">
+      <!-- Thumbnail Image -->
+      <div class="md:w-1/3">
+        <img src="https://via.placeholder.com/300x200" alt="Blog Image" class="object-cover w-full h-full">
+      </div>
+
+      <!-- Blog Content -->
+      <div class="md:w-2/3 p-6 flex flex-col justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-purple-400 mb-2"><%= blog.title %></h2>
+          <p class="text-gray-400 text-sm mb-2">Published on: <%= new Date(blog.createdAt).toLocaleDateString() %></p>
+          <p class="text-gray-300 mb-4"><%= blog.content.slice(0, 150) %>...</p>
         </div>
+        <div>
+          <a href="/blogs/<%= blog._id %>" class="text-purple-500 hover:underline font-semibold">Read More</a>
+        </div>
+      </div>
     </div>
+    <% }) %>
+  </div>
+
 </body>
 </html>

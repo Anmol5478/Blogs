@@ -13,6 +13,28 @@ app.set('view engine', 'ejs');
 app.use(cookieParser());
 app.set('views', path.join(__dirname, 'views'));
 
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: 'dp3j1lxga', // Replace with your Cloudinary cloud name
+    api_key: '747177168456589',       // Replace with your Cloudinary API key
+    api_secret: 'FuJgVJfu7k92AoXhYTEsV3DVJZ4'  // Replace with your Cloudinary API secret
+});
+
+// Configure multer-storage-cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'user_profiles', // Folder name in Cloudinary
+        allowed_formats: ['jpg', 'jpeg', 'png'], // Allowed file formats
+    },
+});
+
+const upload = multer({ storage: storage });
+
 const authenticateUser = async (req, res, next) => {
   const token = req.cookies.token; // Get token from cookies
   if (!token) {
@@ -72,16 +94,23 @@ app.post('/register', async (req, res) => {
               username,
               email,
               password: hash,
+              Image: req.file // Save the Cloudinary image URL
               
           });
 
          let token = jwt.sign({email}, 'secret');
          res.cookie('token', token);
-          res.redirect("/");
+          res.redirect("/dashboard");
       });  
   });
 }
 );
+
+app.get("/blogs/:id", async (req, res) => {
+  const blog = await Blogmodel.findById(req.params.id);
+  res.render("readmore", { blog });
+});
+
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/');

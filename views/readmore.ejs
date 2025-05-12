@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= blog.title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: white;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center px-4 py-10">
+  <div class="w-full max-w-3xl bg-gray-900/60 border border-gray-700 p-8 rounded-xl shadow-2xl">
+    
+    <!-- Blog Title -->
+    <h1 class="text-4xl font-bold text-purple-400 mb-4 leading-tight"><%= blog.title %></h1>
+    
+    <!-- Meta Info -->
+    <p class="text-gray-400 text-sm mb-6">Published on: <%= new Date(blog.createdAt).toLocaleDateString() %></p>
+
+    <!-- Blog Image -->
+    <div class="mb-6">
+      <img src="https://via.placeholder.com/800x400" alt="Blog image" class="rounded-lg shadow-lg w-full object-cover">
+    </div>
+
+    <!-- Blog Content -->
+    <div class="prose prose-invert max-w-none text-gray-200 leading-relaxed">
+      <p><%= blog.content %></p>
+    </div>
+
+    <!-- Back Link -->
+    <div class="mt-8">
+      <a href="/blogs" class="text-purple-500 hover:underline">&larr; Back to All Blogs</a>
+    </div>
+  </div>
+</body>
+</html>

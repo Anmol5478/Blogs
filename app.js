@@ -75,7 +75,7 @@ app.post('/login', async (req, res) => {
       if(result){
           let token = jwt.sign({email}, 'secret');
           res.cookie('token', token);
-          res.redirect("/blog/write");
+          res.redirect("/blogs");
       }else{
           res.status(400).send('Invalid credentials');
       }
@@ -86,25 +86,25 @@ app.get('/register', (req, res) => {
   res.render('register');
 }
 );
-app.post('/register', async (req, res) => {  
-  let {username, email, password} = req.body;  
-  bcrypt.genSalt(10,(err, salt) => {
-      bcrypt.hash(password, salt, async (err, hash) => { 
-          let createduser= await usermodel.create({
-              username,
-              email,
-              password: hash,
-              Image: req.file // Save the Cloudinary image URL
-              
-          });
+app.post('/register', upload.single('Image'), async (req, res) => {
+  let { username, email, password } = req.body;
+  
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(password, salt, async (err, hash) => {
+      let createduser = await usermodel.create({
+        username,
+        email,
+        password: hash,
+        Image: req.file.path // Cloudinary URL will be here
+      });
 
-         let token = jwt.sign({email}, 'secret');
-         res.cookie('token', token);
-          res.redirect("/dashboard");
-      });  
+      let token = jwt.sign({ email }, 'secret');
+      res.cookie('token', token);
+      res.redirect("/dashboard");
+    });
   });
-}
-);
+});
+
 
 app.get("/blogs/:id", async (req, res) => {
   const blog = await Blogmodel.findById(req.params.id);
@@ -117,22 +117,21 @@ app.get('/logout', (req, res) => {
 }
 );
 
-app.get('/blog/write', (req, res) => {
-  res.render("blog")
+app.get('/blog/write', authenticateUser, (req, res) => {
+  res.render('blog');
 });
 
-app.post('/blog/write', async (req, res) => {
+app.post('/blog/write', authenticateUser, async (req, res) => {
   try {
-      // Convert the "recomended" field to a Boolean
       const blogData = {
           title: req.body.title,
           content: req.body.content,
-          recomended: req.body.recomended === 'on' // Convert "on" to true, otherwise false
+          recomended: req.body.recomended === 'on',
+          email: req.user.email, // Automatically associate the blog with the logged-in user's email
       };
 
-      // Save the blog to the database
       const newBlog = await Blogmodel.create(blogData);
-      res.redirect('/blogs'); // Redirect to the list of blogs after saving
+      res.redirect('/blogs');
   } catch (error) {
       console.error(error);
       res.status(500).send('An error occurred while saving the blog.');
@@ -141,11 +140,40 @@ app.post('/blog/write', async (req, res) => {
 app.get('/dashboard', authenticateUser, async (req, res) => {
   const user = req.user; // User is now set by the middleware
   const userBlogs = await Blogmodel.find({ author: user._id }); // Fetch blogs written by the user
-  res.render('dashboard', { user, userBlogs });
+  res.render('dashboard', { user, userBlogs }); // Pass user and blogs to the template
 });
 app.get('/blogs', async (req, res) => {
   let blogs= await Blogmodel.find();
   res.render('Allblogs', {blogs});
 }
 );
+
+app.get('/blogs/:id/edit', async (req, res) => {
+  const blog = await Blogmodel.findById(req.params.id);
+  res.render('edit', { blog });
+}
+);
+app.post('/blogs/:id/edit', async (req, res) => {
+  const { title, content, recomended } = req.body;
+  await Blogmodel.findByIdAndUpdate(req.params.id, {
+      title,
+      content,
+      recomended: recomended === 'on' // Convert "on" to true, otherwise false
+  });
+  res.redirect('/blogs');
+}
+);
+app.get('/blogs/:id/delete', async (req, res) => {
+  await Blogmodel.findByIdAndDelete(req.params.id);
+  res.redirect('/blogs');
+}
+);
+app.get('/blogs/:id/recomended', async (req, res) => {
+  const blog = await Blogmodel.findById(req.params.id);
+  blog.recomended = !blog.recomended; // Toggle the recomended status
+  await blog.save();
+  res.redirect('/blogs');
+}
+);
+
 app.listen(3000)

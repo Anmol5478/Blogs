@@ -18,8 +18,9 @@
 
     <!-- Profile Section -->
     <div class="w-full bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 text-center">
-      <img src="https://via.placeholder.com/100" alt="Profile Image" class="mx-auto w-24 h-24 rounded-full mb-4 border-4 border-purple-500">
-      <h2 class="text-2xl font-bold text-purple-400 mb-2">Welcome, <%= user.name %>!</h2>
+      <!-- Display Profile Picture -->
+      <img src="<%= user.Image %>" alt="Profile Picture" class="mx-auto w-24 h-24 rounded-full mb-4 border-4 border-purple-500">
+      <h2 class="text-2xl font-bold text-purple-400 mb-2">Welcome, <%= user.username %>!</h2>
       <p class="text-gray-300">Email: <%= user.email %></p>
       <p class="text-gray-400">Member since: <%= new Date(user.createdAt).toLocaleDateString() %></p>
     </div>

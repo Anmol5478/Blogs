@@ -24,21 +24,26 @@ const UserSchema = new mongoose.Schema({
 
 const blogschema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
+      type: String,
+      required: true,
   },
   content: {
-    type: String,
-    required: true,
+      type: String,
+      required: true,
   },
   recomended: {
-    type: Boolean,
-    default: false,
+      type: Boolean,
+      default: false,
   },
   createdAt: {
-    type: Date,
-    default: Date.now,
-  }
+      type: Date,
+      default: Date.now,
+  },
+  author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'todoUser', // Reference the user model
+      required: true,
+  },
 });
 
 
